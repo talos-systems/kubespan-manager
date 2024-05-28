@@ -27,12 +27,17 @@ type Cluster struct {
 	subscriptionsMu sync.Mutex
 }
 
-// NewCluster creates new cluster with specified ID.
+// NewCluster creates new cluster with specified id.
 func NewCluster(id string) *Cluster {
 	return &Cluster{
 		id:         id,
 		affiliates: map[string]*Affiliate{},
 	}
+}
+
+// ID returns the cluster id.
+func (cluster *Cluster) ID() string {
+	return cluster.id
 }
 
 // WithAffiliate runs a function against the affiliate.
@@ -174,7 +179,8 @@ func (cluster *Cluster) notify(notifications ...*Notification) {
 	}
 }
 
-func (cluster *Cluster) stats() (affiliates, endpoints, subscriptions int) {
+// Stats returns the number of affiliates, endpoints and subscriptions.
+func (cluster *Cluster) Stats() (affiliates, endpoints, subscriptions int) {
 	cluster.affiliatesMu.Lock()
 
 	affiliates = len(cluster.affiliates)

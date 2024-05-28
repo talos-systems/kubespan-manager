@@ -16,7 +16,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/siderolabs/discovery-service/internal/state"
+	internalstate "github.com/siderolabs/discovery-service/internal/state"
+	"github.com/siderolabs/discovery-service/pkg/state"
 )
 
 //go:embed "html/index.html"
@@ -28,7 +29,7 @@ var inspectTemplate []byte
 // ClusterInspectData represents all affiliate data asssociated with a cluster.
 type ClusterInspectData struct {
 	ClusterID  string
-	Affiliates []*state.AffiliateExport
+	Affiliates []*internalstate.AffiliateExport
 }
 
 var inspectPage = template.Must(template.New("inspect").Parse(string(inspectTemplate)))

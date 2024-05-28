@@ -33,9 +33,9 @@ import (
 
 	"github.com/siderolabs/discovery-service/internal/limiter"
 	_ "github.com/siderolabs/discovery-service/internal/proto"
-	"github.com/siderolabs/discovery-service/internal/state"
 	"github.com/siderolabs/discovery-service/pkg/limits"
 	"github.com/siderolabs/discovery-service/pkg/server"
+	"github.com/siderolabs/discovery-service/pkg/state"
 )
 
 func checkMetrics(t *testing.T, c prom.Collector) {

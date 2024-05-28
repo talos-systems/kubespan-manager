@@ -15,7 +15,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 
-	"github.com/siderolabs/discovery-service/internal/state"
+	internalstate "github.com/siderolabs/discovery-service/internal/state"
+	"github.com/siderolabs/discovery-service/pkg/state"
 )
 
 func checkMetrics(t *testing.T, c prom.Collector) {
@@ -41,7 +42,7 @@ func TestState(t *testing.T) {
 	assert.Equal(t, 0, removedAffiliates)
 
 	st.GetCluster("id1")
-	assert.NoError(t, st.GetCluster("id2").WithAffiliate("af1", func(affiliate *state.Affiliate) error {
+	assert.NoError(t, st.GetCluster("id2").WithAffiliate("af1", func(affiliate *internalstate.Affiliate) error {
 		affiliate.Update([]byte("data1"), now.Add(time.Minute))
 
 		return nil

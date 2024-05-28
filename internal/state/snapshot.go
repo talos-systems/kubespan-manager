@@ -6,7 +6,6 @@
 package state
 
 import (
-	"fmt"
 	"slices"
 
 	"github.com/siderolabs/gen/xslices"
@@ -15,52 +14,8 @@ import (
 	storagepb "github.com/siderolabs/discovery-service/api/storage"
 )
 
-// ExportClusterSnapshots exports all cluster snapshots and calls the provided function for each one.
-//
-// Implements storage.Snapshotter interface.
-func (state *State) ExportClusterSnapshots(f func(snapshot *storagepb.ClusterSnapshot) error) error {
-	var err error
-
-	// reuse the same snapshotin each iteration
-	clusterSnapshot := &storagepb.ClusterSnapshot{}
-
-	state.clusters.Enumerate(func(_ string, cluster *Cluster) bool {
-		snapshotCluster(cluster, clusterSnapshot)
-
-		err = f(clusterSnapshot)
-
-		return err == nil
-	})
-
-	return err
-}
-
-// ImportClusterSnapshots imports cluster snapshots by calling the provided function until it returns false.
-//
-// Implements storage.Snapshotter interface.
-func (state *State) ImportClusterSnapshots(f func() (*storagepb.ClusterSnapshot, bool, error)) error {
-	for {
-		clusterSnapshot, ok, err := f()
-		if err != nil {
-			return err
-		}
-
-		if !ok {
-			break
-		}
-
-		cluster := clusterFromSnapshot(clusterSnapshot)
-
-		_, loaded := state.clusters.LoadOrStore(cluster.id, cluster)
-		if loaded {
-			return fmt.Errorf("cluster %q already exists", cluster.id)
-		}
-	}
-
-	return nil
-}
-
-func snapshotCluster(cluster *Cluster, snapshot *storagepb.ClusterSnapshot) {
+// Snapshot takes a snapshot of the cluster into the given snapshot reference.
+func (cluster *Cluster) Snapshot(snapshot *storagepb.ClusterSnapshot) {
 	cluster.affiliatesMu.Lock()
 	defer cluster.affiliatesMu.Unlock()
 
@@ -110,7 +65,8 @@ func snapshotCluster(cluster *Cluster, snapshot *storagepb.ClusterSnapshot) {
 	}
 }
 
-func clusterFromSnapshot(snapshot *storagepb.ClusterSnapshot) *Cluster {
+// ClusterFromSnapshot creates a new cluster from the provided snapshot.
+func ClusterFromSnapshot(snapshot *storagepb.ClusterSnapshot) *Cluster {
 	return &Cluster{
 		id:         snapshot.Id,
 		affiliates: xslices.ToMap(snapshot.Affiliates, affiliateFromSnapshot),

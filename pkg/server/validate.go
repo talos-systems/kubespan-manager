@@ -16,11 +16,11 @@ import (
 
 func validateClusterID(id string) error {
 	if len(id) < 1 {
-		return status.Errorf(codes.InvalidArgument, "cluster ID can't be empty")
+		return status.Errorf(codes.InvalidArgument, "cluster id can't be empty")
 	}
 
 	if len(id) > limits.ClusterIDMax {
-		return status.Errorf(codes.InvalidArgument, "cluster ID is too long")
+		return status.Errorf(codes.InvalidArgument, "cluster id is too long")
 	}
 
 	return nil
@@ -28,11 +28,11 @@ func validateClusterID(id string) error {
 
 func validateAffiliateID(id string) error {
 	if len(id) < 1 {
-		return status.Errorf(codes.InvalidArgument, "affiliate ID can't be empty")
+		return status.Errorf(codes.InvalidArgument, "affiliate id can't be empty")
 	}
 
 	if len(id) > limits.AffiliateIDMax {
-		return status.Errorf(codes.InvalidArgument, "affiliate ID is too long")
+		return status.Errorf(codes.InvalidArgument, "affiliate id is too long")
 	}
 
 	return nil

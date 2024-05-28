@@ -17,7 +17,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/siderolabs/discovery-service/internal/state"
+	internalstate "github.com/siderolabs/discovery-service/internal/state"
+	"github.com/siderolabs/discovery-service/pkg/state"
 )
 
 const updateBuffer = 32
@@ -104,7 +105,7 @@ func (srv *ClusterServer) AffiliateUpdate(_ context.Context, req *pb.AffiliateUp
 		return nil, err
 	}
 
-	if err := srv.state.GetCluster(req.ClusterId).WithAffiliate(req.AffiliateId, func(affiliate *state.Affiliate) error {
+	if err := srv.state.GetCluster(req.ClusterId).WithAffiliate(req.AffiliateId, func(affiliate *internalstate.Affiliate) error {
 		expiration := time.Now().Add(req.Ttl.AsDuration())
 
 		if len(req.AffiliateData) > 0 {
@@ -114,9 +115,9 @@ func (srv *ClusterServer) AffiliateUpdate(_ context.Context, req *pb.AffiliateUp
 		return affiliate.MergeEndpoints(req.AffiliateEndpoints, expiration)
 	}); err != nil {
 		switch {
-		case errors.Is(err, state.ErrTooManyEndpoints):
+		case errors.Is(err, internalstate.ErrTooManyEndpoints):
 			return nil, status.Error(codes.ResourceExhausted, err.Error())
-		case errors.Is(err, state.ErrTooManyAffiliates):
+		case errors.Is(err, internalstate.ErrTooManyAffiliates):
 			return nil, status.Error(codes.ResourceExhausted, err.Error())
 		default:
 			return nil, err
@@ -170,7 +171,7 @@ func (srv *ClusterServer) Watch(req *pb.WatchRequest, server pb.Cluster_WatchSer
 	}
 
 	// make enough room to handle connection issues
-	updates := make(chan *state.Notification, updateBuffer)
+	updates := make(chan *internalstate.Notification, updateBuffer)
 
 	snapshot, subscription := srv.state.GetCluster(req.ClusterId).Subscribe(updates)
 	defer subscription.Close()

@@ -18,7 +18,8 @@ import (
 	"go.uber.org/zap/zaptest"
 
 	"github.com/siderolabs/discovery-service/internal/landing"
-	"github.com/siderolabs/discovery-service/internal/state"
+	internalstate "github.com/siderolabs/discovery-service/internal/state"
+	"github.com/siderolabs/discovery-service/pkg/state"
 )
 
 // TestInspectHandler tests the /inspect endpoint.
@@ -33,14 +34,14 @@ func TestInspectHanlder(t *testing.T) {
 	t.Cleanup(cancel)
 
 	// add affiliates to the cluster "fake1"
-	err := testCluster.WithAffiliate("af1", func(affiliate *state.Affiliate) error {
+	err := testCluster.WithAffiliate("af1", func(affiliate *internalstate.Affiliate) error {
 		affiliate.Update([]byte("data1"), now.Add(time.Minute))
 
 		return nil
 	})
 	require.NoError(t, err)
 
-	err = testCluster.WithAffiliate("af2", func(affiliate *state.Affiliate) error {
+	err = testCluster.WithAffiliate("af2", func(affiliate *internalstate.Affiliate) error {
 		affiliate.Update([]byte("data2"), now.Add(time.Minute))
 
 		return nil

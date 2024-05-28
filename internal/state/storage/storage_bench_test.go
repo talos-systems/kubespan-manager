@@ -13,8 +13,8 @@ import (
 	"go.uber.org/zap"
 
 	storagepb "github.com/siderolabs/discovery-service/api/storage"
-	"github.com/siderolabs/discovery-service/internal/state"
 	"github.com/siderolabs/discovery-service/internal/state/storage"
+	"github.com/siderolabs/discovery-service/pkg/state"
 )
 
 func BenchmarkExport(b *testing.B) {
